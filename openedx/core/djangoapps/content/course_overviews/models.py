@@ -130,6 +130,11 @@ class CourseOverview(TimeStampedModel):
     self_paced = models.BooleanField(default=False)
     marketing_url = models.TextField(null=True)
     eligible_for_financial_aid = models.BooleanField(default=True)
+    
+    # Custom course fields
+    course_type = models.TextField(null=True)
+    course_topic = models.TextField(null=True)
+    course_skills = models.TextField(null=True)
 
     # Course highlight info, used to guide course update emails
     has_highlights = models.BooleanField(null=True, default=None)  # if None, you have to look up the answer yourself

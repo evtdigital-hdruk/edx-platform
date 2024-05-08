@@ -35,6 +35,9 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
             this.$el.find('#course-name').val(this.model.get('run'));
             this.$el.find('.set-date').datepicker({dateFormat: 'm/d/yy'});
             this.$el.find('#certificates-display-behavior').val(this.model.get('certificates_display_behavior'));
+            this.$el.find('#course-type').val(this.model.get('course_type'));
+            this.$el.find('#course-topic').val(this.model.get('course_topic'));
+            this.$el.find('#course-skills').val(this.model.get('course_skills'));
             this.updateCertificatesDisplayBehavior();
 
             // Avoid showing broken image on mistyped/nonexistent image
@@ -188,7 +191,10 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
             course_settings_learning_fields: 'course-settings-learning-fields',
             add_course_learning_info: 'add-course-learning-info',
             add_course_instructor_info: 'add-course-instructor-info',
-            course_learning_info: 'course-learning-info'
+            course_learning_info: 'course-learning-info',
+            course_type: 'course-type',
+            course_topic: 'course-topic',
+            course_skills: 'course-skills'
         },
 
         addLearningFields: function() {
@@ -317,6 +323,9 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
             case 'course-subtitle':
             case 'course-duration':
             case 'course-description':
+            case 'course-type':
+            case 'course-topic':
+            case 'course-skills':
             case 'course-short-description':
                 this.setField(event);
                 break;
