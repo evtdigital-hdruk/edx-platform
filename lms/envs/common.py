@@ -4309,7 +4309,6 @@ PROFILE_IMAGE_BACKEND = {
     'class': 'openedx.core.storage.OverwriteStorage',
     'options': {
         'location': os.path.join(MEDIA_ROOT, 'profile-images/'),
-        'base_url': os.path.join(MEDIA_URL, 'profile-images/'),
     },
 }
 PROFILE_IMAGE_DEFAULT_FILENAME = 'images/profiles/default'
