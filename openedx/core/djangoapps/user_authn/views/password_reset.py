@@ -133,6 +133,14 @@ def send_password_reset_success_email(user, request):
         language=user_language_preference,
         user_context={"name": user.profile.name},
     )
+    
+    reply_to_address = (
+    configuration_helpers.get_value('email_reply_to_address', settings.DEFAULT_REPLY_TO_EMAIL) or
+    configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+    )
+    reply_to = [reply_to_address]
+    msg.options['reply_to'] = reply_to
+    
     try:
         ace.send(msg)
     except Exception:  # pylint: disable=broad-except
@@ -170,6 +178,14 @@ def send_password_reset_email_for_user(user, request, preferred_email=None):
         language=user_language_preference,
         user_context=message_context,
     )
+    
+    reply_to_address = (
+    configuration_helpers.get_value('email_reply_to_address', settings.DEFAULT_REPLY_TO_EMAIL) or
+    configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+    )
+    reply_to = [reply_to_address]
+    msg.options['reply_to'] = reply_to
+    
     ace.send(msg)
 
 
@@ -642,6 +658,14 @@ def password_change_request_handler(request):
                     language=settings.LANGUAGE_CODE,
                     user_context=message_context,
                 )
+                
+                reply_to_address = (
+                configuration_helpers.get_value('email_reply_to_address', settings.DEFAULT_REPLY_TO_EMAIL) or
+                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+                )
+                reply_to = [reply_to_address]
+                msg.options['reply_to'] = reply_to
+                
                 ace.send(msg)
         except errors.UserAPIInternalError as err:
             log.exception('Error occurred during password change for user {email}: {error}'

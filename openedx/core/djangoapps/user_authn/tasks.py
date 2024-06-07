@@ -45,7 +45,7 @@ def check_pwned_password_and_send_track_event(user_id, password, internal_user=F
 
 @shared_task(bind=True, default_retry_delay=30, max_retries=2)
 @set_code_owner_attribute
-def send_activation_email(self, msg_string, from_address=None, site_id=None):
+def send_activation_email(self, msg_string, from_address=None, reply_to=None, site_id=None):
     """
     Sending an activation email to the user.
     """
@@ -59,6 +59,14 @@ def send_activation_email(self, msg_string, from_address=None, site_id=None):
             configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         )
     msg.options['from_address'] = from_address
+    if reply_to is None:
+        reply_to_address = (
+            configuration_helpers.get_value('ACTIVATION_EMAIL_REPLY_TO_ADDRESS') or 
+            configuration_helpers.get_value('email_reply_to_address', settings.DEFAULT_REPLY_TO_EMAIL) or
+            configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+        )
+        reply_to = [reply_to_address]
+        msg.options['reply_to'] = reply_to
 
     dest_addr = msg.recipient.email_address
 
