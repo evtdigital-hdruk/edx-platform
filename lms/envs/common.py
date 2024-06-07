@@ -1837,6 +1837,7 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_EMAIL = 'registration@example.com'
+DEFAULT_REPLY_TO_EMAIL = ''
 DEFAULT_FEEDBACK_EMAIL = 'feedback@example.com'
 SERVER_EMAIL = 'devops@example.com'
 TECH_SUPPORT_EMAIL = 'technical@example.com'
@@ -1851,6 +1852,9 @@ CONTACT_MAILING_ADDRESS = 'SET-ME-PLEASE'
 
 # Account activation email sender address
 ACTIVATION_EMAIL_FROM_ADDRESS = ''
+
+# Account activation email reply-to address
+ACTIVATION_EMAIL_REPLY_TO_ADDRESS = ''
 
 ADMINS = ()
 MANAGERS = ADMINS

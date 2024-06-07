@@ -1198,6 +1198,7 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_EMAIL = 'registration@example.com'
+DEFAULT_REPLY_TO_EMAIL = ''
 DEFAULT_FEEDBACK_EMAIL = 'feedback@example.com'
 TECH_SUPPORT_EMAIL = 'technical@example.com'
 CONTACT_EMAIL = 'info@example.com'
