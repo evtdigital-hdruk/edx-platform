@@ -297,6 +297,35 @@ def courses(request):
         }
     )
 
+@ensure_csrf_cookie
+@cache_if_anonymous()
+def courseVideos(request):
+    """
+    Render "find videos" page.  The course selection work is done in courseware.courses.
+    """
+    courses_list = []
+    course_discovery_meanings = getattr(settings, 'COURSE_DISCOVERY_MEANINGS', {})
+    if not settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
+        courses_list = get_courses(request.user)
+
+        if configuration_helpers.get_value("ENABLE_COURSE_SORTING_BY_START_DATE",
+                                           settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"]):
+            courses_list = sort_by_start_date(courses_list)
+        else:
+            courses_list = sort_by_announcement(courses_list)
+
+    # Add marketable programs to the context.
+    programs_list = get_programs_with_type(request.site, include_hidden=False)
+
+    return render_to_response(
+        "courseware/courses_videos.html",
+        {
+            'courses': courses_list,
+            'course_discovery_meanings': course_discovery_meanings,
+            'programs_list': programs_list,
+        }
+    )
+
 
 class PerUserVideoMetadataThrottle(UserRateThrottle):
     """
