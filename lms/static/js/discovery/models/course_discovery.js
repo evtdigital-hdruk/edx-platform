@@ -24,23 +24,48 @@
             parse: function(response) {
                 var courses = response.results || [];
                 var facets = response.aggs || {};
-                this.courseCards.add(_.pluck(courses, 'data'));
-
-                this.set({
-                    totalCount: response.total,
-                    latestCount: courses.length
-                });
-
-                var options = this.facetOptions;
-                _(facets).each(function(obj, key) {
-                    _(obj.terms).each(function(count, term) {
-                        options.add({
-                            facet: key,
-                            term: term,
-                            count: count
-                        }, {merge: true});
+                if (window.location.pathname === '/videos') {
+                    courses = courses.filter(course => course.data.course_type == 'video');
+                    console.log(courses);
+                    this.courseCards.add(_.pluck(courses, 'data'));
+                    this.set({
+                        totalCount: courses.length,
+                        latestCount: courses.length
                     });
-                });
+                    if (facets.course_type) {
+                        delete facets.course_type;
+                    }
+                    var options = this.facetOptions;
+                    _(facets).each(function(obj, key) {
+                        _(obj.terms).each(function(count, term) {
+                            options.add({
+                                facet: key,
+                                term: term,
+                                count: count
+                            }, {merge: true});
+                        });
+                    });
+                } else {
+                    courses = courses.filter(course => course.data.course_type !== 'video');
+                    this.courseCards.add(_.pluck(courses, 'data'));
+                    this.set({
+                        totalCount: courses.length,
+                        latestCount: courses.length
+                    });
+                    if (facets.course_type && facets.course_type.terms && facets.course_type.terms.video) {
+                        delete facets.course_type.terms.video;
+                    }
+                    var options = this.facetOptions;
+                    _(facets).each(function(obj, key) {
+                        _(obj.terms).each(function(count, term) {
+                            options.add({
+                                facet: key,
+                                term: term,
+                                count: count
+                            }, {merge: true});
+                        });
+                    });
+                }
             },
 
             reset: function() {
