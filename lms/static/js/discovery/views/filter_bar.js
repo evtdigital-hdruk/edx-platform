@@ -39,9 +39,13 @@
             },
 
             addFilter: function(filter) {
-                var label = new FilterLabel({model: filter});
-                this.$ul.append(label.render().el);
-                this.show();
+                var pathIsVideo = window.location.pathname === '/videos';
+                var labelIsVideo = filter.attributes.query === 'video';
+                if (!(pathIsVideo && labelIsVideo)) {
+                    var label = new FilterLabel({model: filter});
+                    this.$ul.append(label.render().el);
+                    this.show();
+                }
             },
 
             hideIfEmpty: function() {
