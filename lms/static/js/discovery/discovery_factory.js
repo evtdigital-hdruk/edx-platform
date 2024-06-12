@@ -24,7 +24,6 @@
             listing = new CoursesListing({model: courseListingModel});
 
             dispatcher.listenTo(form, 'search', function(query) {
-                filters.reset();
                 form.showLoadingIndicator();
                 search.performSearch(query, filters.getTerms());
             });
