@@ -369,6 +369,8 @@ urlpatterns += [
     ),
 
     re_path(r'^courses/?$', branding_views.courses, name='courses'),
+    
+    re_path(r'^videos/?$', branding_views.courseVideos, name='videos'),
 
     # About the course
     re_path(
