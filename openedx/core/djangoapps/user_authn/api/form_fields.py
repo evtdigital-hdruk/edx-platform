@@ -151,7 +151,7 @@ def add_goals_field(is_field_required=False):
     """
     # Translators: This phrase appears above a field meant to hold
     # the user's reasons for registering with edX.
-    goals_label = _("Tell us why you're interested in {platform_name}").format(
+    goals_label = _("What would you like to achieve with {platform_name}?").format(
         platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME)
     )
 
