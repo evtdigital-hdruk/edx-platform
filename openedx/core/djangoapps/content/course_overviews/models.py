@@ -108,6 +108,7 @@ class CourseOverview(TimeStampedModel):
 
     # Grading
     lowest_passing_grade = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    no_grade = models.BooleanField(default=False)
 
     # Access parameters
     days_early_for_beta = models.FloatField(null=True)
@@ -272,6 +273,11 @@ class CourseOverview(TimeStampedModel):
         course_overview.entrance_exam_id = course.entrance_exam_id or ''
         # Despite it being a float, the course object defaults to an int. So we will detect that case and update
         # it to be a float like everything else.
+        
+        course_overview.course_type = course.course_type
+        course_overview.course_topic = course.course_topic
+        course_overview.no_grade = course.no_grade
+        
         if isinstance(course.entrance_exam_minimum_score_pct, int):
             course_overview.entrance_exam_minimum_score_pct = course.entrance_exam_minimum_score_pct / 100
         else:
