@@ -71,6 +71,9 @@ class CourseSerializer(serializers.Serializer):
     courseName = serializers.CharField(source="display_name_with_default")
     courseNumber = serializers.CharField(source="display_number_with_default")
     socialShareUrl = serializers.SerializerMethodField()
+    courseType = serializers.CharField(source="course_type")
+    courseTopic = serializers.CharField(source="course_topic")
+    noGrade = serializers.BooleanField(source="no_grade")
 
     def get_socialShareUrl(self, instance):
         return self.context.get("course_share_urls", {}).get(instance.id)
