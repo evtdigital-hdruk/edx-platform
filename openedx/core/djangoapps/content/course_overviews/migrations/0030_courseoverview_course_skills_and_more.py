@@ -40,14 +40,4 @@ class Migration(migrations.Migration):
             name='course_type',
             field=models.TextField(null=True),
         ),
-        migrations.AddField(
-            model_name='courseoverview',
-            name='no_grade',
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
-            model_name='historicalcourseoverview',
-            name='no_grade',
-            field=models.BooleanField(default=False),
-        ),
     ]
