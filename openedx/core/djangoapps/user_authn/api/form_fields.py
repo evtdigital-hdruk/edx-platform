@@ -21,6 +21,7 @@ FIELD_TYPE_MAP = {
     forms.Textarea: "textarea",
     forms.BooleanField: "checkbox",
     forms.EmailField: "email",
+    forms.MultipleChoiceField: "multiplechoice"
 }
 
 
@@ -84,6 +85,31 @@ def _add_field_with_configurable_select_options(field_name, field_label, is_fiel
 
     return field_attributes
 
+def _add_field_with_configurable_multiplechoice_options(field_name, field_label, is_field_required=False, error_message=''):
+    """
+    Returns a field description
+        If select options are given for this field in EXTRA_FIELD_OPTIONS, it
+        will be a select type otherwise it will be a text type.
+    """
+    field_attributes = {
+        'name': field_name,
+        'label': field_label,
+        'error_message': error_message if is_field_required else '',
+    }
+    extra_field_options = configuration_helpers.get_value('EXTRA_FIELD_OPTIONS')
+    if extra_field_options is None or extra_field_options.get(field_name) is None:
+        field_attributes.update({
+            'type': SUPPORTED_FIELDS_TYPES['TEXT'],
+        })
+    else:
+        field_options = extra_field_options.get(field_name)
+        options = [(str(option), option) for option in field_options]
+        field_attributes.update({
+            'type': SUPPORTED_FIELDS_TYPES['MULTIPLECHOICE'],
+            'options': options
+        })
+
+    return field_attributes
 
 def add_level_of_education_field(is_field_required=False):
     """
@@ -364,3 +390,11 @@ def add_confirm_email_field(is_field_required=False):
         'label': email_label,
         'error_message': accounts.REQUIRED_FIELD_CONFIRM_EMAIL_TEXT_MSG if is_field_required else '',
     }
+
+def add_marketing_preferences_field(is_field_required=False):
+    """
+    Returns the marketing preferences field description using MultipleChoiceField, which will render as a series of checkboxes.
+    """
+    marketing_preferences_label = _("Marketing Preferences")
+    
+    return _add_field_with_configurable_multiplechoice_options('marketing_preferences', marketing_preferences_label, is_field_required, error_message='')
