@@ -88,6 +88,19 @@ class _CourseApiMediaCollectionSerializer(serializers.Serializer):  # pylint: di
     course_image = _MediaSerializer(source='*', uri_attribute='course_image_url')
     course_video = _MediaSerializer(source='*', uri_attribute='course_video_url')
     image = ImageSerializer(source='image_urls')
+    
+class _InstructorInfoSerializer(serializers.Serializer):
+    """ Serializer for instructor info """
+    name = serializers.CharField(allow_blank=True)
+    title = serializers.CharField(allow_blank=True)
+    organization = serializers.CharField(allow_blank=True)
+    image = serializers.CharField(allow_blank=True)
+    bio = serializers.CharField(allow_blank=True)
+
+
+class _InstructorsSerializer(serializers.Serializer):
+    """ Serializer for instructors """
+    instructors = _InstructorInfoSerializer(many=True, allow_empty=True)
 
 
 class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -114,6 +127,11 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     mobile_available = serializers.BooleanField()
     hidden = serializers.SerializerMethodField()
     invitation_only = serializers.BooleanField()
+    course_type = serializers.CharField()
+    course_topic = serializers.CharField()
+    course_skills = serializers.ListField(child=serializers.CharField(allow_blank=True))
+    instructor_info = _InstructorsSerializer()
+    
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
