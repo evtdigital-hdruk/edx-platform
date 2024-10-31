@@ -64,7 +64,7 @@ class CourseOverview(TimeStampedModel):
         app_label = 'course_overviews'
 
     # IMPORTANT: Bump this whenever you modify this model and/or add a migration.
-    VERSION = 19
+    VERSION = 20
 
     # Cache entry versioning.
     version = models.IntegerField()
@@ -107,6 +107,7 @@ class CourseOverview(TimeStampedModel):
 
     # Grading
     lowest_passing_grade = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    no_grade = models.BooleanField(default=False)
 
     # Access parameters
     days_early_for_beta = models.FloatField(null=True)
@@ -129,6 +130,14 @@ class CourseOverview(TimeStampedModel):
     self_paced = models.BooleanField(default=False)
     marketing_url = models.TextField(null=True)
     eligible_for_financial_aid = models.BooleanField(default=True)
+    
+    # Custom course fields
+    course_type = models.TextField(null=True)
+    course_topic = models.TextField(null=True)
+    course_skills = models.JSONField(null=True, blank=True)
+    
+    # Instructor info
+    instructor_info = models.JSONField(null=True, blank=True)
 
     # Course highlight info, used to guide course update emails
     has_highlights = models.BooleanField(null=True, default=None)  # if None, you have to look up the answer yourself
@@ -266,6 +275,14 @@ class CourseOverview(TimeStampedModel):
         course_overview.entrance_exam_id = course.entrance_exam_id or ''
         # Despite it being a float, the course object defaults to an int. So we will detect that case and update
         # it to be a float like everything else.
+        
+        course_overview.course_type = course.course_type
+        course_overview.course_topic = course.course_topic
+        course_overview.course_skills = course.course_skills
+        course_overview.no_grade = course.no_grade
+        
+        course_overview.instructor_info = course.instructor_info
+        
         if isinstance(course.entrance_exam_minimum_score_pct, int):
             course_overview.entrance_exam_minimum_score_pct = course.entrance_exam_minimum_score_pct / 100
         else:

@@ -18,6 +18,7 @@ from xblock.runtime import IdGenerator
 from xmodule.contentstore.content import StaticContent
 from xmodule.contentstore.django import contentstore
 from xmodule.exceptions import NotFoundError
+from xmodule.library_content_block import LibraryContentBlock
 from xmodule.modulestore.django import modulestore
 from xmodule.xml_block import XmlMixin
 

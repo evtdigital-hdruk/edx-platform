@@ -36,13 +36,7 @@
             });
 
             dispatcher.listenTo(refineSidebar, 'selectOption', function(type, query, name) {
-                form.showLoadingIndicator();
-                if (filters.get(type)) {
-                    removeFilter(type);
-                } else {
-                    filters.add({type: type, query: query, name: name});
-                    search.refineSearch(filters.getTerms());
-                }
+                handleQueryParams(type, query, name);
             });
 
             dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
@@ -86,6 +80,7 @@
             // kick off search on page refresh
             form.doSearch(searchQuery);
 
+            // Utility functions
             function removeFilter(type) {
                 form.showLoadingIndicator();
                 filters.remove(type);
@@ -99,6 +94,40 @@
             function quote(string) {
                 return '"' + string + '"';
             }
+
+            // URL Query Parameter Functions
+            function getQueryParams() {
+                var params = {};
+                var queryString = window.location.search.substring(1);
+                var queryArray = queryString.split('&');
+                for (var i = 0; i < queryArray.length; i++) {
+                    var pair = queryArray[i].split('=');
+                    params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+                }
+                return params;
+            }
+
+            function handleQueryParams(type, query, name) {
+                form.showLoadingIndicator();
+                if (filters.get(type)) {
+                    removeFilter(type);
+                } else {
+                    filters.add({type: type, query: query, name: name});
+                    search.refineSearch(filters.getTerms());
+                }
+            }
+
+            function onPageLoad() {
+                var params = getQueryParams();
+                if (params.type && params.query && params.name) {
+                    handleQueryParams(params.type, params.query, params.name);
+                }
+            }
+
+            // Run the function on page load
+            $(function() {
+                onPageLoad();
+            });
         };
     });
 }(define || RequireJS.define));

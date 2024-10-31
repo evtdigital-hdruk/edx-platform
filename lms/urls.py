@@ -358,6 +358,8 @@ urlpatterns += [
     ),
 
     re_path(r'^courses/?$', branding_views.courses, name='courses'),
+    
+    re_path(r'^videos/?$', branding_views.courseVideos, name='videos'),
 
     # About the course
     re_path(
@@ -920,10 +922,7 @@ urlpatterns += [
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     # profile image urls must come before the media url to work
-    urlpatterns += static(
-        settings.PROFILE_IMAGE_BACKEND['options']['base_url'],
-        document_root=settings.PROFILE_IMAGE_BACKEND['options']['location']
-    )
+    urlpatterns += static(settings.PROFILE_IMAGE_BACKEND['options']['location'])
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # UX reference templates

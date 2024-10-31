@@ -391,6 +391,42 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
               <span class="tip tip-stacked">${_("Identify the course language here. This is used to assist users find courses that are taught in a specific language. It is also used to localize the 'From:' field in bulk emails.")}</span>
             </li>
           </ol>
+          <ol class="list-input">
+            <li class="field" id="field-course-type">
+              <label for="course-type">${_("Course Type")}</label>
+              <select id="course-type">
+                <option value="" selected> - </option>
+                % for type, label in course_type_options:
+                  <option value="${type}">${label}</option>
+                % endfor
+              </select>
+              <span class="tip tip-stacked">${_("Identify the course type here.")}</span>
+            </li>
+          </ol>
+          <ol class="list-input">
+            <li class="field" id="field-course-topic">
+              <label for="course-topic">${_("Course Topic")}</label>
+              <select id="course-topic">
+                <option value="" selected> - </option>
+                % for topic, label in course_topic_options:
+                  <option value="${topic}">${label}</option>
+                % endfor
+              </select>
+              <span class="tip tip-stacked">${_("Identify the course topic here.")}</span>
+            </li>
+          </ol>
+          <ol class="list-input">
+            <li class="field" id="field-course-skills">
+              <label for="course-skills">${_("Course Skills")}</label>
+              <select id="course-skills" multiple>
+                <option value="" selected> - </option>
+                % for skill, label in course_skills_options:
+                  <option value="${skill}">${label}</option>
+                % endfor
+              </select>
+              <span class="tip tip-stacked">${_("Identify the course skills here?")}</span>
+            </li>
+          </ol>
         </div>
         % endif
 

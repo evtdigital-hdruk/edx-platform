@@ -7,4 +7,5 @@ SUPPORTED_FIELDS_TYPES = {
     'SELECT': 'select',
     'TEXT': 'text',
     'TEXTAREA': 'textarea',
+    'MULTIPLECHOICE': 'multiplechoice'
 }

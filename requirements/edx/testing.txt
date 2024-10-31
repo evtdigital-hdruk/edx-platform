@@ -85,6 +85,7 @@ backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
     #   -c requirements/edx/../constraints.txt
     #   -r requirements/edx/base.txt
+    #   backports-zoneinfo
     #   celery
     #   django
     #   edx-milestones
@@ -102,6 +103,7 @@ billiard==4.2.0
 bleach[css]==6.1.0
     # via
     #   -r requirements/edx/base.txt
+    #   bleach
     #   edx-enterprise
     #   lti-consumer-xblock
     #   openedx-django-wiki
@@ -620,6 +622,7 @@ edx-opaque-keys[django]==2.9.0
     #   edx-drf-extensions
     #   edx-enterprise
     #   edx-milestones
+    #   edx-opaque-keys
     #   edx-organizations
     #   edx-proctoring
     #   edx-when
@@ -782,6 +785,7 @@ import-linter==2.0
     # via -r requirements/edx/testing.in
 importlib-metadata==6.11.0
     # via
+    #   -c requirements/edx/../common_constraints.txt
     #   -r requirements/edx/base.txt
     #   markdown
     #   pytest-randomly
@@ -1163,6 +1167,7 @@ pyjwt[crypto]==2.8.0
     #   edx-drf-extensions
     #   edx-proctoring
     #   edx-rest-api-client
+    #   pyjwt
     #   pylti1p3
     #   snowflake-connector-python
     #   social-auth-core
@@ -1376,6 +1381,10 @@ requests-oauthlib==2.0.0
 rich==13.7.1
     # via typer
 rpds-py==0.18.1
+    # via
+    #   httpx
+    #   rfc3986
+rpds-py==0.10.6
     # via
     #   -r requirements/edx/base.txt
     #   jsonschema

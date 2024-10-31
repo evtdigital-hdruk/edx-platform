@@ -1414,6 +1414,9 @@ def get_course_settings(request, course_key, course_block):
         'enable_extended_course_details': enable_extended_course_details,
         'upgrade_deadline': upgrade_deadline,
         'mfe_proctored_exam_settings_url': get_proctored_exam_settings_url(course_block.id),
+        'course_type_options': sorted(settings.ALL_COURSE_TYPES, key=lambda x:x[1], reverse=False),
+        'course_topic_options': sorted(settings.ALL_COURSE_CATEGORY, key=lambda x:x[1], reverse=False),
+        'course_skills_options': sorted(settings.ALL_COURSE_SKILLS, key=lambda x:x[1], reverse=False),
     }
     if is_prerequisite_courses_enabled():
         courses, in_process_course_actions = get_courses_accessible_to_user(request)

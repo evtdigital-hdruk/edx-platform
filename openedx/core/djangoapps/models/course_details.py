@@ -78,6 +78,9 @@ class CourseDetails:
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.course_topic = ""
+        self.course_type = ""
+        self.course_skills = []
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -130,6 +133,9 @@ class CourseDetails:
         course_details.self_paced = block.self_paced
         course_details.learning_info = block.learning_info
         course_details.instructor_info = block.instructor_info
+        course_details.course_type = block.course_type
+        course_details.course_topic = block.course_topic
+        course_details.course_skills = block.course_skills
 
         # Default course license is "All Rights Reserved"
         course_details.license = getattr(block, "license", "all-rights-reserved")
@@ -294,6 +300,18 @@ class CourseDetails:
 
         if 'language' in jsondict and jsondict['language'] != block.language:
             block.language = jsondict['language']
+            dirty = True
+            
+        if 'course_type' in jsondict and jsondict['course_type'] != block.course_type:
+            block.course_type = jsondict['course_type']
+            dirty = True
+
+        if 'course_topic' in jsondict and jsondict['course_topic'] != block.course_topic:
+            block.course_topic = jsondict['course_topic']
+            dirty = True
+            
+        if 'course_skills' in jsondict and jsondict['course_skills'] != block.course_skills:
+            block.course_skills = jsondict['course_skills']
             dirty = True
 
         if (block.can_toggle_course_pacing

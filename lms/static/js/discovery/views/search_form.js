@@ -43,9 +43,10 @@
             },
 
             showFoundMessage: function(count) {
+                var pathIsVideo = window.location.pathname === '/videos';
                 var msg = ngettext(
-                    'Viewing %s course',
-                    'Viewing %s courses',
+                    pathIsVideo ? 'Showing %s video' : 'Showing %s course',
+                    pathIsVideo ? 'Showing %s videos' : 'Showing %s courses',
                     count
                 );
                 this.$message.html(interpolate(msg, [count]));

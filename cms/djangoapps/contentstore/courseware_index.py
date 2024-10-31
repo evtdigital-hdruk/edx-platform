@@ -589,6 +589,10 @@ class CourseAboutSearchIndexer(CoursewareSearchIndexer):
         AboutInfo("language", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
         AboutInfo("invitation_only", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
         AboutInfo("catalog_visibility", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
+        AboutInfo("course_type", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
+        AboutInfo("course_topic", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
+        AboutInfo("course_skills", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
+        AboutInfo("instructor_info", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
     ]
 
     @classmethod
@@ -628,6 +632,12 @@ class CourseAboutSearchIndexer(CoursewareSearchIndexer):
             # Broad exception handler so that a single bad property does not scupper the collection of others
             try:
                 section_content = about_information.get_value(**about_context)
+                if (about_information.property_name == 'instructor_info'):
+                    def to_camel_case(name):
+                        words = re.split(r'\s+', name)
+                        return words[0].lower() + ''.join(word.capitalize() for word in words[1:])
+                    instructor_names = [to_camel_case(instructor['name']) for instructor in about_information.get_value(**about_context)['instructors']]
+                    section_content = instructor_names
             except:  # pylint: disable=bare-except
                 section_content = None
                 log.warning(

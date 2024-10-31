@@ -13,7 +13,8 @@
             events: {
                 'click li button': 'selectOption',
                 'click .show-less': 'collapse',
-                'click .show-more': 'expand'
+                'click .show-more': 'expand',
+                'click .filter-header': 'toggleFilterContent'
             },
 
             initialize: function(options) {
@@ -21,17 +22,16 @@
                 this.$container = this.$el.find('.search-facets-lists');
                 this.facetTpl = HtmlUtils.template($('#facet-tpl').html());
                 this.facetOptionTpl = HtmlUtils.template($('#facet_option-tpl').html());
+                this.render();
             },
 
             facetName: function(key) {
-                // eslint-disable-next-line no-mixed-operators
                 return this.meanings[key] && this.meanings[key].name || key;
             },
 
             termName: function(facetKey, termKey) {
                 return this.meanings[facetKey]
                 && this.meanings[facetKey].terms
-                // eslint-disable-next-line no-mixed-operators
                 && this.meanings[facetKey].terms[termKey] || termKey;
             },
 
@@ -63,6 +63,14 @@
                 );
                 HtmlUtils.setHtml(this.$container, htmlSnippet);
                 return this;
+            },
+
+            toggleFilterContent: function(event) {
+                var $content = this.$el.find('.search-facets-lists');
+                var $header = $(event.currentTarget);
+                $content.toggle();
+                $header.toggleClass('expanded');
+                $header.toggleClass('collapsed');
             },
 
             collapse: function(event) {

@@ -81,8 +81,11 @@
                             position: o.position,
                             opacity: 0,
                             'z-index': 11000,
-                            left: 50 + '%',
-                            'margin-left': -(modal_width / 2) + 'px',
+                            width: 'calc(100% - 20px)',
+                            maxWidth: '720px',
+                            left: 0,
+                            right: 0,
+                            margin: 'auto',
                             top: o.top + 'px'
                         });
                     }

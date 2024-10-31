@@ -10,7 +10,7 @@ from openedx_tagging.core.tagging.models import Tag
 from organizations.models import Organization
 from xmodule.modulestore.django import contentstore, modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, upload_file_to_course
-from xmodule.modulestore.tests.factories import BlockFactory, CourseFactory, ToyCourseFactory
+from xmodule.modulestore.tests.factories import BlockFactory, CourseFactory, LibraryFactory, ToyCourseFactory
 
 from cms.djangoapps.contentstore.utils import reverse_usage_url
 from openedx.core.djangoapps.content_libraries import api as library_api

@@ -891,7 +891,6 @@ CSRF_COOKIE_SECURE = False
 CROSS_DOMAIN_CSRF_COOKIE_DOMAIN = ''
 CROSS_DOMAIN_CSRF_COOKIE_NAME = ''
 CSRF_TRUSTED_ORIGINS = []
-CSRF_TRUSTED_ORIGINS_WITH_SCHEME = []
 
 #################### CAPA External Code Evaluation #############################
 XQUEUE_WAITTIME_BETWEEN_REQUESTS = 5  # seconds
@@ -1269,6 +1268,7 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_EMAIL = 'registration@example.com'
+DEFAULT_REPLY_TO_EMAIL = ''
 DEFAULT_FEEDBACK_EMAIL = 'feedback@example.com'
 TECH_SUPPORT_EMAIL = 'technical@example.com'
 CONTACT_EMAIL = 'info@example.com'

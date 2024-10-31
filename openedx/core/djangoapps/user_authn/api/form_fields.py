@@ -21,6 +21,7 @@ FIELD_TYPE_MAP = {
     forms.Textarea: "textarea",
     forms.BooleanField: "checkbox",
     forms.EmailField: "email",
+    forms.MultipleChoiceField: "multiplechoice"
 }
 
 
@@ -84,6 +85,31 @@ def _add_field_with_configurable_select_options(field_name, field_label, is_fiel
 
     return field_attributes
 
+def _add_field_with_configurable_multiplechoice_options(field_name, field_label, is_field_required=False, error_message=''):
+    """
+    Returns a field description
+        If select options are given for this field in EXTRA_FIELD_OPTIONS, it
+        will be a select type otherwise it will be a text type.
+    """
+    field_attributes = {
+        'name': field_name,
+        'label': field_label,
+        'error_message': error_message if is_field_required else '',
+    }
+    extra_field_options = configuration_helpers.get_value('EXTRA_FIELD_OPTIONS')
+    if extra_field_options is None or extra_field_options.get(field_name) is None:
+        field_attributes.update({
+            'type': SUPPORTED_FIELDS_TYPES['TEXT'],
+        })
+    else:
+        field_options = extra_field_options.get(field_name)
+        options = [(str(option), option) for option in field_options]
+        field_attributes.update({
+            'type': SUPPORTED_FIELDS_TYPES['MULTIPLECHOICE'],
+            'options': options
+        })
+
+    return field_attributes
 
 def add_level_of_education_field(is_field_required=False):
     """
@@ -151,7 +177,7 @@ def add_goals_field(is_field_required=False):
     """
     # Translators: This phrase appears above a field meant to hold
     # the user's reasons for registering with edX.
-    goals_label = _("Tell us why you're interested in {platform_name}").format(
+    goals_label = _("What would you like to achieve with {platform_name}?").format(
         platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME)
     )
 

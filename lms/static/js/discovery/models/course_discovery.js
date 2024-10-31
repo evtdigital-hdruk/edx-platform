@@ -24,20 +24,83 @@
             parse: function(response) {
                 var courses = response.results || [];
                 var facets = response.aggs || {};
-                this.courseCards.add(_.pluck(courses, 'data'));
+                var options = this.facetOptions;
 
+                // Determine if the current page is /videos
+                var isVideosPage = window.location.pathname === '/videos';
+
+                // Filter courses based on the current page
+                courses = courses.filter(function(course) {
+                    return isVideosPage ? course.data.course_type === 'video' : course.data.course_type !== 'video';
+                });
+
+                // Add courses to the collection
+                this.courseCards.add(_.pluck(courses, 'data'));
                 this.set({
-                    totalCount: response.total,
+                    totalCount: courses.length,
                     latestCount: courses.length
                 });
 
-                var options = this.facetOptions;
+                // Remove unwanted facets
+                if (isVideosPage) {
+                    if (facets.course_type) {
+                        delete facets.course_type;
+                    }
+                } else {
+                    if (facets.course_type && facets.course_type.terms && facets.course_type.terms.video) {
+                        delete facets.course_type.terms.video;
+                    }
+                }
+
+                // Go through results and add any missing facet values
+                var facetTypes = Object.keys(facets);
+                var allFacets = {};
+
+                facetTypes.forEach(function(facetType) {
+                    allFacets[facetType] = {};
+                });
+
+                courses.forEach(function(course) {
+                    facetTypes.forEach(function(facetType) {
+                        var facetValue = course.data[facetType];
+                        if (facetValue) {
+                            if (Array.isArray(facetValue)) {
+                                facetValue.forEach(function(value) {
+                                    allFacets[facetType][value] = (allFacets[facetType][value] || 0) + 1;
+                                });
+                            } else {
+                                allFacets[facetType][facetValue] = (allFacets[facetType][facetValue] || 0) + 1;
+                            }
+                        }
+                    });
+                });
+
+                // Filter facets to include only those relevant to the displayed list
+                _.each(allFacets, function(values, facetType) {
+                    if (!facets[facetType]) {
+                        facets[facetType] = {
+                            terms: values,
+                            total: _.reduce(_.values(values), function(memo, num) { return memo + num; }, 0),
+                            other: 0
+                        };
+                    } else {
+                        _.each(values, function(count, term) {
+                            if (!facets[facetType].terms[term]) {
+                                facets[facetType].terms[term] = count;
+                            } else {
+                                facets[facetType].terms[term] += count;
+                            }
+                        });
+                    }
+                });
+                // Add facet options to the collection
                 _(facets).each(function(obj, key) {
-                    _(obj.terms).each(function(count, term) {
+                    var sortedTerms = _.keys(obj.terms).sort();
+                    sortedTerms.forEach(function(term) {
                         options.add({
                             facet: key,
                             term: term,
-                            count: count
+                            count: obj.terms[term]
                         }, {merge: true});
                     });
                 });
