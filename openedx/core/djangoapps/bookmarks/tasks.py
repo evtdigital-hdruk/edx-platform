@@ -4,6 +4,8 @@ Tasks for bookmarks.
 
 
 import logging
+import openedx.core.djangoapps.content.block_structure.tasks as tasks
+from django.conf import settings
 
 from celery import shared_task
 from django.db import transaction
@@ -122,10 +124,14 @@ def _update_xblocks_cache(course_key):
             block_cache.display_name = block_data['display_name']
             block_cache.paths = paths
             block_cache.save()
+        # else:
+        #     for item in block_data['children']:
+        #         log.info(item)
 
     with transaction.atomic():
         block_caches = XBlockCache.objects.filter(course_key=course_key)
         for block_cache in block_caches:
+            log.info('Block cache display name: %s', str(block_cache.display_name))
             block_data = blocks_data.pop(str(block_cache.usage_key), None)
             if block_data:
                 update_block_cache_if_needed(block_cache, block_data)
@@ -161,4 +167,9 @@ def update_xblocks_cache(course_id):
     course_key = CourseKey.from_string(course_id)
     log.info('Starting XBlockCaches update for course_key: %s', course_id)
     _update_xblocks_cache(course_key)
+    # tasks.update_course_in_cache_v2(course_key)
+    tasks.update_course_in_cache_v2.apply_async(
+        kwargs=dict(course_id=course_id),
+        countdown=settings.BLOCK_STRUCTURES_SETTINGS['COURSE_PUBLISH_TASK_DELAY'],
+    )
     log.info('Ending XBlockCaches update for course_key: %s', course_id)

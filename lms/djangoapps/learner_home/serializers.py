@@ -15,6 +15,8 @@ from openedx_filters.learning.filters import CourseEnrollmentAPIRenderStarted, C
 from common.djangoapps.course_modes.models import CourseMode
 from openedx.features.course_experience import course_home_url
 from xmodule.data import CertificatesDisplayBehaviors
+from lms.djangoapps.learner_home.utils import course_progress_url
+from openedx.core.djangoapps.content.block_structure.api import get_course_in_cache
 
 
 class LiteralField(serializers.Field):
@@ -458,6 +460,7 @@ class LearnerEnrollmentSerializer(serializers.Serializer):
     gradeData = GradeDataSerializer(source="*")
     programs = serializers.SerializerMethodField()
     credit = serializers.SerializerMethodField()
+    additionalSettings = serializers.SerializerMethodField()
 
     def get_entitlement(self, instance):
         """
@@ -490,6 +493,21 @@ class LearnerEnrollmentSerializer(serializers.Serializer):
         else:
             return CreditSerializer(credit_status).data
 
+    def get_additionalSettings(self, instance):
+        """Fetch and return any metadata set using COURSE_BLOCKS_API_EXTRA_FIELDS."""
+        additional_settings = {}
+        def to_camel_case(value):
+            parts = value.replace("-", " ").replace("_", " ").split()
+            camel_case = parts[0].lower() + ''.join(word.capitalize() for word in parts[1:])
+            return camel_case
+        try:
+            course = get_course_in_cache(instance.course_id)            
+            for block_key in course.topological_traversal(filter_func=lambda block_key: block_key.block_type == 'course'):
+                for block_type, field_name in settings.COURSE_BLOCKS_API_EXTRA_FIELDS:
+                    additional_settings[to_camel_case(field_name)] = course.get_xblock_field(block_key, field_name)
+        except Exception as error:
+            print("Error: ", error) 
+        return additional_settings
 
 class UnfulfilledEntitlementSerializer(serializers.Serializer):
     """
