@@ -82,7 +82,6 @@ class CourseMetadata:
         'is_onboarding_exam',
         'discussions_settings',
         'course_topic',
-        'course_type',
         'course_skills'
     ]
 
