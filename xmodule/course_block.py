@@ -1060,7 +1060,7 @@ class CourseFields:  # lint-amnesty, pylint: disable=missing-class-docstring
     )
     
     course_type = String(
-        display_name=_("Course Topic"),
+        display_name=_("Course Type"),
         help=_("Select the course type."),
         default=None,
         scope=Scope.settings
