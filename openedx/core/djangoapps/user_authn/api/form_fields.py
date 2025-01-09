@@ -403,3 +403,11 @@ def add_work_experience_field(is_field_required=False):
     return _add_field_with_configurable_select_options(
         'work_experience', work_experience_label, is_field_required,
     )
+
+def add_marketing_preferences_field(is_field_required=False):
+    """
+    Returns the marketing preferences field description using MultipleChoiceField, which will render as a series of checkboxes.
+    """
+    marketing_preferences_label = _("Marketing Preferences")
+    
+    return _add_field_with_configurable_multiplechoice_options('marketing_preferences', marketing_preferences_label, is_field_required, error_message='')
