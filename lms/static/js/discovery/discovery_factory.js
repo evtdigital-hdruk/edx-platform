@@ -5,7 +5,7 @@
         'js/discovery/views/search_form', 'js/discovery/views/courses_listing',
         'js/discovery/views/filter_bar', 'js/discovery/views/refine_sidebar'],
     function(Backbone, SearchState, Filters, SearchForm, CoursesListing, FilterBar, RefineSidebar) {
-        return function(meanings, searchQuery, userLanguage, userTimezone) {
+        return function(meanings, searchQuery, userLanguage, userTimezone, setDefaultFilter) {
             var dispatcher = _.extend({}, Backbone.Events);
             var search = new SearchState();
             var filters = new Filters();
@@ -21,6 +21,13 @@
                 userLanguage: userLanguage,
                 userTimezone: userTimezone
             };
+            if (setDefaultFilter && userLanguage) {
+                filters.add({
+                    type: 'language',
+                    query: userLanguage,
+                    name: refineSidebar.termName('language', userLanguage)
+                });
+            }
             listing = new CoursesListing({model: courseListingModel});
 
             dispatcher.listenTo(form, 'search', function(query) {
@@ -35,6 +42,7 @@
             dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
 
             dispatcher.listenTo(filterBar, 'clearAll', function() {
+                filters.reset();
                 form.doSearch('');
             });
 

@@ -619,14 +619,6 @@ class CourseFields:  # lint-amnesty, pylint: disable=missing-class-docstring
         # Ensure that courses imported from XML keep their image
         default="images_course_image.jpg"
     )
-    issue_badges = Boolean(
-        display_name=_("Issue Open Badges"),
-        help=_(
-            "Issue Open Badges badges for this course. Badges are generated when certificates are created."
-        ),
-        scope=Scope.settings,
-        default=True
-    )
     ## Course level Certificate Name overrides.
     cert_name_short = String(
         help=_(
@@ -1068,7 +1060,7 @@ class CourseFields:  # lint-amnesty, pylint: disable=missing-class-docstring
     )
     
     course_type = String(
-        display_name=_("Course Topic"),
+        display_name=_("Course Type"),
         help=_("Select the course type."),
         default=None,
         scope=Scope.settings
@@ -1195,8 +1187,8 @@ class CourseBlock(
         return policy_str
 
     @classmethod
-    def parse_xml(cls, node, runtime, keys, id_generator):
-        instance = super().parse_xml(node, runtime, keys, id_generator)
+    def parse_xml(cls, node, runtime, keys):
+        instance = super().parse_xml(node, runtime, keys)
 
         policy_dir = None
         url_name = node.get('url_name')

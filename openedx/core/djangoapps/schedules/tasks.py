@@ -27,6 +27,7 @@ from openedx.core.djangoapps.schedules import message_types, resolvers
 from openedx.core.djangoapps.schedules.models import Schedule, ScheduleConfig
 from openedx.core.lib.celery.task_utils import emulate_http_request
 from common.djangoapps.track import segment
+from common.djangoapps.student.models import UserProfile
 
 LOG = logging.getLogger(__name__)
 
@@ -178,6 +179,7 @@ def _course_update_schedule_send(site_id, msg_str):
         site_id,
         'deliver_course_update',
         COURSE_UPDATE_LOG_PREFIX,
+        False
     )
 
 
@@ -270,16 +272,26 @@ ScheduleCourseNextSectionUpdate.task_instance = current_app.register_task(Schedu
 ScheduleCourseNextSectionUpdate = ScheduleCourseNextSectionUpdate.task_instance
 
 
-def _schedule_send(msg_str, site_id, delivery_config_var, log_prefix):  # lint-amnesty, pylint: disable=missing-function-docstring
+def _schedule_send(msg_str, site_id, delivery_config_var, log_prefix, is_marketing=True):  # lint-amnesty, pylint: disable=missing-function-docstring
     site = Site.objects.select_related('configuration').get(pk=site_id)
     if _is_delivery_enabled(site, delivery_config_var, log_prefix):
         msg = Message.from_string(msg_str)
 
         user = User.objects.get(id=msg.recipient.lms_user_id)
+        user_profile = UserProfile.objects.get(user=user)
+        try:
+            meta = user_profile.get_meta() or {}
+        except Exception as error:
+            LOG.error('Error retrieving meta data for user %s: %s', user.id, error)
+            meta = {}
         with emulate_http_request(site=site, user=user):
             _annonate_send_task_for_monitoring(msg)
             LOG.debug('%s: Sending message = %s', log_prefix, msg_str)
-            ace.send(msg)
+            marketing_preferences = meta.get('marketing_preferences', [])
+            if (is_marketing is False) or ('Futures eLearning' in marketing_preferences):
+                ace.send(msg)
+            else:
+                LOG.info('Skipping message for user %s due to marketing preferences', user.id)
             _track_message_sent(site, user, msg)
 
 
