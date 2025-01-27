@@ -140,7 +140,10 @@ def _create_schedule(enrollment, enrollment_created):
     if not enrollment_created:
         # only create schedules when enrollment records are created
         return
-
+    if enrollment.course_overview.course_type == "video":
+        # do not create schedules for individual videos
+        log.debug("Skipping scheduling as course type is video")
+        return
     # This represents the first date at which the learner can access the content. This will be the latter of
     # either the enrollment date or the course's start date.
     content_availability_date = max(enrollment.created, enrollment.course_overview.start)
