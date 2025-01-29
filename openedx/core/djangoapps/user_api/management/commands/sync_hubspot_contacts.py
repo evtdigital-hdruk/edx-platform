@@ -314,8 +314,8 @@ class Command(BaseCommand):
                     res for res in response.json()['results']
                     if (
                         len(res['propertiesWithHistory']['communication_preference']) >0) and
-                        datetime.strptime((res['propertiesWithHistory']['communication_preference'][0]['timestamp']),"%Y-%m-%dT%H:%M:%S.%fZ") > 
-                        datetime.strptime((res['properties']['last_synced_with_futures']),"%Y-%m-%dT%H:%M:%S.%fZ") and
+                        datetime.strptime((res['propertiesWithHistory']['communication_preference'][0]['timestamp'][:19]),"%Y-%m-%dT%H:%M:%S") > 
+                        datetime.strptime((res['properties']['last_synced_with_futures'][:19]),"%Y-%m-%dT%H:%M:%S") and
                         res['propertiesWithHistory']['communication_preference'][0]['sourceId'] != site_conf.get_value('HUBSPOT_APP_ID')
                 )
             ]
