@@ -5,6 +5,7 @@ import logging
 from django import forms
 from django.conf import settings
 from django.utils.translation import gettext as _
+from django_countries import countries
 
 from common.djangoapps.student.models import UserProfile
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -373,7 +374,14 @@ def add_country_field(is_field_required=False):
     empty
     """
     error_msg = accounts.REQUIRED_FIELD_COUNTRY_MSG
-    return {'name': 'country', 'error_message': error_msg if is_field_required else ''}
+    country_label = _('Country')
+    
+    return {
+        'name': 'country',
+        'type': SUPPORTED_FIELDS_TYPES['SELECT'],
+        'label': country_label,
+        'options': list(countries), 
+        'error_message': error_msg if is_field_required else ''}
 
 
 def add_confirm_email_field(is_field_required=False):
