@@ -56,12 +56,14 @@ class TestMarketingPreferencesSuppression(CacheIsolationTestCase):
         profile.set_meta({'marketing_preferences': preferences})
         profile.save()
 
-    def _call_schedule_send(self, is_marketing):
+    def _call_schedule_send(self, is_marketing=None):
         """
         Invoke ``_schedule_send`` for the recurring-nudge delivery config with
         ``tasks.ace`` and ``tasks.Message`` patched.  Returns the ``ace`` mock so
-        callers can assert on ``ace.send``.
+        callers can assert on ``ace.send``.  With ``is_marketing=None`` the
+        argument is omitted, as upstream callers omit it.
         """
+        kwargs = {} if is_marketing is None else {'is_marketing': is_marketing}
         with patch.object(tasks, 'ace') as mock_ace, patch.object(tasks, 'Message') as mock_message:
             # Route the (mocked) message back to our real user so the profile
             # lookup inside ``_schedule_send`` finds the meta we set up.
@@ -71,7 +73,7 @@ class TestMarketingPreferencesSuppression(CacheIsolationTestCase):
                 self.site.id,
                 'deliver_recurring_nudge',
                 tasks.RECURRING_NUDGE_LOG_PREFIX,
-                is_marketing=is_marketing,
+                **kwargs,
             )
         return mock_ace
 
@@ -99,3 +101,18 @@ class TestMarketingPreferencesSuppression(CacheIsolationTestCase):
         self._set_marketing_preferences(preferences)
         mock_ace = self._call_schedule_send(is_marketing=False)
         assert mock_ace.send.called
+
+    @ddt.data(['Futures eLearning'], ['Some Other Newsletter'], [])
+    def test_gate_is_off_when_is_marketing_is_not_passed(self, preferences):
+        """(d) is_marketing omitted -> upstream behaviour: sent regardless of preferences."""
+        self._set_marketing_preferences(preferences)
+        mock_ace = self._call_schedule_send()
+        assert mock_ace.send.called
+
+    def test_marketing_senders_opt_in_to_the_gate(self):
+        """The nudge and upgrade-reminder senders pass is_marketing=True; course updates pass False."""
+        with patch.object(tasks, '_schedule_send') as mock_send:
+            tasks._recurring_nudge_schedule_send(self.site.id, 'msg-str')  # pylint: disable=protected-access
+            tasks._upgrade_reminder_schedule_send(self.site.id, 'msg-str')  # pylint: disable=protected-access
+            tasks._course_update_schedule_send(self.site.id, 'msg-str')  # pylint: disable=protected-access
+        assert [call.kwargs['is_marketing'] for call in mock_send.call_args_list] == [True, True, False]
