@@ -282,7 +282,7 @@ ScheduleCourseNextSectionUpdate.task_instance = current_app.register_task(Schedu
 ScheduleCourseNextSectionUpdate = ScheduleCourseNextSectionUpdate.task_instance
 
 
-def _schedule_send(msg_str, site_id, delivery_config_var, log_prefix, is_marketing=True):  # lint-amnesty, pylint: disable=missing-function-docstring
+def _schedule_send(msg_str, site_id, delivery_config_var, log_prefix, is_marketing=False):  # lint-amnesty, pylint: disable=missing-function-docstring
     site = Site.objects.select_related('configuration').get(pk=site_id)
     if _is_delivery_enabled(site, delivery_config_var, log_prefix):
         msg = Message.from_string(msg_str)
@@ -294,7 +294,9 @@ def _schedule_send(msg_str, site_id, delivery_config_var, log_prefix, is_marketi
             return
 
         # Gate marketing emails on user's marketing preferences.
-        # Transactional emails (course updates) are always sent.
+        # Transactional emails (course updates) are always sent. The gate is
+        # opt-in: a caller that does not pass is_marketing, as upstream's own
+        # callers and tests do not, gets upstream behaviour unchanged.
         if is_marketing:
             try:
                 profile = UserProfile.objects.get(user=user)
