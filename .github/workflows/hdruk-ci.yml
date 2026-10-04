@@ -1,0 +1,85 @@
+# HDR UK fork CI.
+#
+# Why this file exists: the workflows inherited from openedx/edx-platform
+# trigger on pushes to `master` and run the whole upstream matrix, so nothing
+# useful ran on the fork's own branches (`hdr-uk/**`, `upgrade/**`). This
+# workflow runs only the tests that cover the fork's custom changes:
+#
+#   - openedx/core/djangoapps/schedules: the marketing-preference gate in
+#     tasks.py, its own tests (tests/test_marketing_suppression.py) and the
+#     upstream schedules tests the gate could break.
+#   - openedx/core/djangoapps/user_api/tests/test_helpers.py: the custom
+#     `multiplechoice` field type in helpers.py.
+#
+# The environment setup mirrors .github/workflows/unit-tests.yml (Python
+# 3.11, MongoDB 7.0, `make test-requirements`, lms.envs.test). It is a
+# separate file so the upstream workflows stay untouched and rebases onto a
+# new release do not conflict.
+#
+# This workflow is informational. It must NOT be made a required status
+# check or otherwise gate merges yet.
+
+name: HDR UK CI
+
+on:
+  push:
+    branches:
+      - "hdr-uk/**"
+      - "upgrade/**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  custom-tests:
+    name: Tests for HDR UK custom changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Install system requirements
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libmysqlclient-dev libxmlsec1-dev lynx
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.0
+        with:
+          mongodb-version: "7.0"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements/pip.txt
+            requirements/pip-tools.txt
+            requirements/edx/testing.txt
+
+      - name: Install Python testing requirements
+        id: install
+        run: make test-requirements
+
+      - name: List installed package versions
+        run: pip freeze
+
+      - name: Run schedules app tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          python -Wd -m pytest -p no:randomly --ds=lms.envs.test \
+            openedx/core/djangoapps/schedules/
+
+      - name: Run user_api helpers tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          python -Wd -m pytest -p no:randomly --ds=lms.envs.test \
+            openedx/core/djangoapps/user_api/tests/test_helpers.py
